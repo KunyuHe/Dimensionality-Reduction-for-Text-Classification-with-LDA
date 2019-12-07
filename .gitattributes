@@ -1,0 +1,2 @@
+report/*.* linguist-vendored
+notebook/*.* linguist-vendored
