@@ -107,3 +107,10 @@ venv.bak/
 # text data
 **/*.txt
 **/*.feat
+
+# numpy clean data
+**/*.npz
+**/*.npy
+
+# logs
+**/*.log
