@@ -129,9 +129,8 @@ def LDA(train_size, random_state):
 
         clf_val = LogisticRegressionVal(X_train_, y_train_sub, X_val_, y_val,
                                         k, random_state=random_state)
-        best_k, best_auc, best_f1, best_params = clf_val.tune(best_k, best_auc,
-                                                              best_acc,
-                                                              best_params)
+        best_k, best_auc, best_acc, best_params = clf_val.tune(best_k, best_auc,
+                                                               best_acc, best_params)
 
     clf, file_name, header = clf_val.bestClassifier(best_params)
     lda.set_params(**{'n_components': best_k,
