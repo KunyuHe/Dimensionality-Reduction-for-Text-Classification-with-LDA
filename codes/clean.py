@@ -6,6 +6,7 @@ import numpy as np
 import scipy.sparse as sp
 import spacy
 from sklearn.feature_extraction.text import CountVectorizer, ENGLISH_STOP_WORDS
+import argparse
 
 from utils import createDirs, createLogger
 
@@ -52,7 +53,7 @@ def cleanTrain(train_docs, output_file, min_df=10):
         stop_words_extend = f.readline().split(",")
     stop_words = ENGLISH_STOP_WORDS.union(set(stop_words_extend))
 
-    lemmatized_stop_words = []
+    lemmatized_stop_words = stop_words_extend[:]
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         for stop_word in stop_words:
@@ -66,7 +67,7 @@ def cleanTrain(train_docs, output_file, min_df=10):
                            min_df=min_df)
     dtm = vect.fit_transform(docs)
     logger.info("\t\tTraining DTM shape: %s" % (dtm.shape,))
-    sp.save_npz(OUTPUT_DIR / output_file, dtm)
+    sp.save_npz(output_file, dtm)
 
     return vect
 
@@ -74,47 +75,80 @@ def cleanTrain(train_docs, output_file, min_df=10):
 def cleanTest(vect, test_docs, output_file):
     dtm = vect.transform(test_docs)
     logger.info("\t\tTest DTM shape: %s\n" % (dtm.shape,))
-    sp.save_npz(OUTPUT_DIR / output_file, dtm)
+    sp.save_npz(output_file, dtm)
 
 
-def printCnt(docs, labels):
-    logger.info("\t\tNumber of training reviews: %s" % len(docs))
-    logger.info("\t\tPositive: %s; Negative: %s\n" % (sum(labels),
-                                                      len(labels) - sum(
-                                                          labels)))
+def printCnt(docs, labels, train=True):
+    logger.info("\t\t%s data summary:" % ["Test", "Training"][int(train)])
+    logger.info("\t\t\tNumber of training reviews - %s" % len(docs))
+    logger.info("\t\t\tPositive - %s; Negative - %s\n" % (sum(labels),
+                                                         len(labels) - sum(
+                                                             labels)))
 
 
-if __name__ == '__main__':
+def go(seed, up_to, min_df):
     train_path = INPUT_DIR / 'train'
     test_path = INPUT_DIR / 'test'
 
-    logger.info("\tReading raw training data:")
+    logger.info("\tReading raw data:")
     train_reviews, train_labels = getData(train_path)
-    printCnt(train_reviews, train_labels)
-
-    logger.info("\tReading raw test data:")
     test_reviews, test_labels = getData(test_path)
-    printCnt(test_reviews, test_labels)
+
+    # Get a subset of training data, move the rest to test
+    np.random.seed(seed)
+    train_inds = np.zeros((len(train_reviews),), dtype=bool)
+    train = np.random.choice(range(len(train_reviews)), up_to, replace=False)
+    train_inds[train] = True
+
+    test_reviews += np.array(train_reviews)[~train_inds].tolist()
+    test_labels += np.array(train_labels)[~train_inds].tolist()
+    train_reviews = np.array(train_reviews)[train_inds].tolist()
+    train_labels = np.array(train_labels)[train_inds].tolist()
+
+    printCnt(train_reviews, train_labels)
+    printCnt(test_reviews, test_labels, train=False)
+
+
+    output_dir = OUTPUT_DIR / ('subset_%s/' % up_to)
 
     logger.info("\tFitting and transforming training text to training DTM")
-    createDirs(OUTPUT_DIR)
-    train_vect = cleanTrain(train_reviews, "X_train", min_df=10)
+    createDirs(output_dir)
+    train_vect = cleanTrain(train_reviews, output_dir / "X_train", min_df=min_df)
 
     # Save feature names:
     feature_names = train_vect.get_feature_names()
-    with open(OUTPUT_DIR / 'feature_names.txt', 'w') as f:
+    with open(output_dir / 'feature_names.txt', 'w') as f:
         f.write("\n".join(feature_names))
     logger.info("\t\tFeature names saved.\n")
 
     logger.info("\tTransforming test text to test DTM")
-    cleanTest(train_vect, test_reviews, "X_test")
+    cleanTest(train_vect, test_reviews, output_dir / "X_test")
 
-    save_target = lambda path, docs: np.save(path, np.array(docs).reshape(-1,
-                                                                          1),
+    save_target = lambda path, docs: np.save(path, np.array(docs),
                                              allow_pickle=False)
-    save_target(OUTPUT_DIR / "y_train", train_labels)
-    save_target(OUTPUT_DIR / "y_test", test_labels)
+    save_target(output_dir / "y_train", train_labels)
+    save_target(output_dir / "y_test", test_labels)
 
     logger.info("\tFinished raw text cleaning, DTMs and targets saved to %s" %
-                OUTPUT_DIR.absolute())
+                output_dir.absolute())
     logger.info("Raw text cleaning finished.")
+
+
+if __name__ == '__main__':
+    desc = ("Transform raw text data into document-term matrix.")
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('--up_to', dest='up_to', type=int, default=25000,
+                        help="Number of training samples allowed.")
+    parser.add_argument('--min_df', dest='min_df', type=int, default=10,
+                        help="Minimum frequency of a term to be included.")
+    parser.add_argument('--seed', dest='seed', type=int, default=123,
+                        help="Seed for NumPy random module.")
+    parser.add_argument('--all', dest='all', type=bool, default=False,
+                        help="Whether to run for all deciles.")
+    args = parser.parse_args()
+
+    if args.all:
+        for up_to in np.linspace(1250, 25000, 20):
+            go(args.seed, int(up_to), args.min_df)
+    else:
+        go(args.seed, args.up_to, args.min_df)
