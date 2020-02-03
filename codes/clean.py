@@ -1,3 +1,4 @@
+import argparse
 import re
 import warnings
 from pathlib import Path
@@ -6,7 +7,6 @@ import numpy as np
 import scipy.sparse as sp
 import spacy
 from sklearn.feature_extraction.text import CountVectorizer, ENGLISH_STOP_WORDS
-import argparse
 
 from utils import createDirs, createLogger
 
@@ -19,6 +19,15 @@ logger.info("Logger created, logging to %s" % LOG_DIR.absolute())
 
 
 def getData(path):
+    """
+    Get IMDb movie reviews and corresponding labels.
+
+    Inputs:
+        - path (str): IMDb movie review directory
+
+    Outputs:
+        ([str], [int]): list of movie reviews, list of sentiment labels
+    """
     texts, labels = [], []
 
     for review in ['pos', 'neg']:
@@ -34,6 +43,22 @@ def getData(path):
 
 
 def cleanTrain(train_docs, output_file, min_df=10):
+    """
+    Transform training texts into document-term-matrix (DTM), where each row is
+    a document, each column is a term, and each element represents frequency of
+    the term in that document. Lemmatize, remove stop words, and apply bi-gram
+    transformation. Save the training DTM.
+
+    Inputs:
+        - train_docs ([str]): training documents, each element is a document
+            represented as string
+        - output_file (str): path to save the training DTM as a .npz
+        - min_df (int): minimum frequency for a term to be included in the DTM
+
+    Outputs:
+        (sklearn.feature_extraction.text.CountVectorizer) transformer to be
+            applied on the test texts
+    """
     docs = [doc.replace("<br />", " ") for doc in train_docs]
 
     # Lemmatization
@@ -73,12 +98,34 @@ def cleanTrain(train_docs, output_file, min_df=10):
 
 
 def cleanTest(vect, test_docs, output_file):
+    """
+    Transform test texts into DTM with the training CountVectorizer. Save the
+    test DTM.
+
+    Inputs:
+        - vect (sklearn.feature_extraction.text.CountVectorizer):
+            CountVectorizer fitted on the training set
+        - test_docs ([str]): test documents
+        - output_file (str): path to save the test DTM as a .npz
+    """
     dtm = vect.transform(test_docs)
     logger.info("\t\tTest DTM shape: %s\n" % (dtm.shape,))
     sp.save_npz(output_file, dtm)
 
 
 def printCnt(docs, labels, train=True):
+    """
+    Log the size and balance of training and test sets.
+
+    Inputs:
+        - docs ([str]): training or test documents
+        - labels ([int]): sentiment class of the documents
+        - train (bool): True we are working with the training documents; False
+            otherwise
+
+    Output:
+        (None)
+    """
     logger.info("\t\t%s data summary:" % ["Test", "Training"][int(train)])
     logger.info("\t\t\tNumber of training reviews - %s" % len(docs))
     logger.info("\t\t\tPositive - %s; Negative - %s\n" % (sum(labels),
