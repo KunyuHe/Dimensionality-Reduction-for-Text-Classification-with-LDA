@@ -5,19 +5,32 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 
-from lda_clf import LogisticRegressionVal, evaluate, logger
+from lda import logger
+from logistic_regression import LogisticRegressionVal
+from evaluate import evaluate
 from utils import loadClean, writeResults, preprocessClfParser
 
 INPUT_DIR = Path(r'../data/clean')
 
-def CLF(train_size, random_state):
+
+def TF_IDF(train_size, random_state):
+    """
+    Classification pipeline with tf_idf preprocessing.
+
+    Inputs:
+        - train_size (int): number of training samples.
+        - random_state (int): seed for random number generators
+
+    Output:
+        (None)
+    """
     subset = 'subset_%s' % train_size
     input_dir = INPUT_DIR / subset
 
     X_train, X_test, y_train, y_test = loadClean(input_dir)
     X_train_, X_val, y_train_, y_val = train_test_split(X_train, y_train,
-                                                              test_size=0.2,
-                                                              random_state=random_state)
+                                                        test_size=0.2,
+                                                        random_state=random_state)
 
     tf_idf = TfidfTransformer()
     X_train_ = tf_idf.fit_transform(X_train_)
@@ -51,6 +64,6 @@ if __name__ == '__main__':
 
     if args.all:
         for train_size in np.linspace(1250, 25000, 20):
-            CLF(int(train_size), args.random_state)
+            TF_IDF(int(train_size), args.random_state)
     else:
-        CLF(args.train_size, args.random_state)
+        TF_IDF(args.train_size, args.random_state)
