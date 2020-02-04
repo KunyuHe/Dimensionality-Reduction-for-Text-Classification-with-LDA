@@ -129,8 +129,8 @@ def printCnt(docs, labels, train=True):
     logger.info("\t\t%s data summary:" % ["Test", "Training"][int(train)])
     logger.info("\t\t\tNumber of training reviews - %s" % len(docs))
     logger.info("\t\t\tPositive - %s; Negative - %s\n" % (sum(labels),
-                                                         len(labels) - sum(
-                                                             labels)))
+                                                          len(labels) - sum(
+                                                              labels)))
 
 
 def go(seed, up_to, min_df):
@@ -155,12 +155,12 @@ def go(seed, up_to, min_df):
     printCnt(train_reviews, train_labels)
     printCnt(test_reviews, test_labels, train=False)
 
-
     output_dir = OUTPUT_DIR / ('subset_%s/' % up_to)
 
     logger.info("\tFitting and transforming training text to training DTM")
     createDirs(output_dir)
-    train_vect = cleanTrain(train_reviews, output_dir / "X_train", min_df=min_df)
+    train_vect = cleanTrain(train_reviews, output_dir / "X_train",
+                            min_df=min_df)
 
     # Save feature names:
     feature_names = train_vect.get_feature_names()
@@ -184,8 +184,8 @@ def go(seed, up_to, min_df):
 if __name__ == '__main__':
     desc = ("Transform raw text data into document-term matrix.")
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('--up_to', dest='up_to', type=int, default=25000,
-                        help="Number of training samples allowed.")
+    parser.add_argument('--train_size', dest='train_size', type=int,
+                        default=25000, help="Number of training samples allowed.")
     parser.add_argument('--min_df', dest='min_df', type=int, default=10,
                         help="Minimum frequency of a term to be included.")
     parser.add_argument('--seed', dest='seed', type=int, default=123,
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.all:
-        for up_to in np.linspace(1250, 25000, 20):
-            go(args.seed, int(up_to), args.min_df)
+        for train_size in np.linspace(1250, 25000, 20):
+            go(args.seed, int(train_size), args.min_df)
     else:
-        go(args.seed, args.up_to, args.min_df)
+        go(args.seed, int(args.train_size), args.min_df)

@@ -3,6 +3,7 @@ import warnings
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score, accuracy_score
 
+
 class LogisticRegressionVal:
     """
     Logistic Regression classifier with cross validation tuning process.

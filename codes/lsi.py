@@ -8,7 +8,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-from lda_clf import LogisticRegressionVal, evaluate, logger
+from evaluate import evaluate
+from lda import logger
+from logistic_regression import LogisticRegressionVal
 from utils import loadClean, writeResults, preprocessClfParser
 
 INPUT_DIR = Path(r'../data/clean')
@@ -33,7 +35,7 @@ class TruncatedSVD(BaseEstimator, TransformerMixin):
         if scipy.sparse.issparse(X_test):
             X_test = X_test.toarray()
         proj = self.VT[:self.k, :]
-        return X_test @ proj.T
+        return (X_test @ proj.T)
 
 
 def LSI(train_size, random_state):
@@ -49,7 +51,7 @@ def LSI(train_size, random_state):
     tf_idf = TfidfTransformer()
     X_train_sub = tf_idf.fit_transform(X_train_sub)
     X_val = tf_idf.transform(X_val)
-    
+
     scaler = StandardScaler()
 
     best_params = []
@@ -97,4 +99,4 @@ if __name__ == '__main__':
         for train_size in np.linspace(1250, 25000, 20):
             LSI(int(train_size), args.random_state)
     else:
-        LSI(args.train_size, args.random_state)
+        LSI(int(args.train_size), args.random_state)

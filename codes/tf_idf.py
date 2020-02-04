@@ -5,9 +5,9 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 
+from evaluate import evaluate
 from lda import logger
 from logistic_regression import LogisticRegressionVal
-from evaluate import evaluate
 from utils import loadClean, writeResults, preprocessClfParser
 
 INPUT_DIR = Path(r'../data/clean')
@@ -38,7 +38,7 @@ def TF_IDF(train_size, random_state):
 
     clf_val = LogisticRegressionVal(X_train_, y_train_, X_val, y_val,
                                     "NA", random_state=random_state)
-    best_k, best_auc, best_acc, best_params = clf_val.tune("NA", 0, 0, [])
+    best_k, best_auc, _, best_params = clf_val.tune("NA", 0, 0, [])
     clf, file_name, header = clf_val.bestClassifier(best_params)
     preprocess = make_pipeline(tf_idf)
     tr_time, tr_metrics, test_time, test_metrics = evaluate(preprocess, clf,
@@ -66,4 +66,4 @@ if __name__ == '__main__':
         for train_size in np.linspace(1250, 25000, 20):
             TF_IDF(int(train_size), args.random_state)
     else:
-        TF_IDF(args.train_size, args.random_state)
+        TF_IDF(int(args.train_size), args.random_state)

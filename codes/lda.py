@@ -101,4 +101,4 @@ if __name__ == '__main__':
         for train_size in np.linspace(1250, 25000, 20):
             LDA(int(train_size), args.random_state)
     else:
-        LDA(args.train_size, args.random_state)
+        LDA(int(args.train_size), args.random_state)
