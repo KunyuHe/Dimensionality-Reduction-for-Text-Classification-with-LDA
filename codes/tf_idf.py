@@ -38,7 +38,7 @@ def TF_IDF(train_size, random_state):
 
     clf_val = LogisticRegressionVal(X_train_, y_train_, X_val, y_val,
                                     "NA", random_state=random_state)
-    best_k, best_auc, _, best_params = clf_val.tune("NA", 0, 0, [])
+    best_k, _, _, best_params = clf_val.tune("NA", 0, 0, [])
     clf, file_name, header = clf_val.bestClassifier(best_params)
     preprocess = make_pipeline(tf_idf)
     tr_time, tr_metrics, test_time, test_metrics = evaluate(preprocess, clf,
