@@ -115,3 +115,6 @@ venv.bak/
 # logs
 **/*.log
 **/*.joblib
+
+# notebooks
+**/*.ipynb
