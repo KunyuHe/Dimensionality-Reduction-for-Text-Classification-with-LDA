@@ -1,11 +1,12 @@
+import argparse
+import csv
 import logging
 import os
 import time
-import scipy
+from pathlib import Path
+
 import numpy as np
-from pathlib import  Path
-import csv
-import argparse
+import scipy
 
 PERFORMANCE_DIR = Path(r'../logs/performance')
 METRICS_NAMES = ["ROC_AUC", "accuracy", "precision", "recall"]
@@ -17,9 +18,11 @@ test_names = ["test " + name for name in METRICS_NAMES]
 def createDirs(dir_path):
     """
     Create a new directory if it doesn't exist.
+
     Inputs:
         - dir_path: (str) path to the directory to create
-    Returns:
+
+    Output:
         (None)
     """
     if not os.path.exists(dir_path):
@@ -29,6 +32,16 @@ def createDirs(dir_path):
 
 
 def createLogger(log_dir, logger_name):
+    """
+    Create a logger and print to both console and log file.
+
+    Inputs:
+        - log_dir (str): path to the logging directory
+        - logger_name (str): name of the logger
+
+    Output:
+        (Logger) a Logger instance
+    """
     createDirs(log_dir)
 
     logger = logging.getLogger(logger_name)
@@ -42,6 +55,16 @@ def createLogger(log_dir, logger_name):
 
 
 def loadClean(input_dir):
+    """
+    Load clean data ready for machine learning applications.
+
+    Inputs:
+        - input_dir (str): directory of the data files
+
+    Output:
+        (numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray) training
+            features, test features, training target, test target
+    """
     X_train = scipy.sparse.load_npz(input_dir / "X_train.npz")
     X_test = scipy.sparse.load_npz(input_dir / "X_test.npz")
     y_train = np.load(input_dir / "y_train.npy")
@@ -55,6 +78,24 @@ def writeResults(file_name,
                  train_cnt, best_k, best_params,
                  train_time, train_metrics,
                  test_time, test_metrics):
+    """
+    Append machine learning pipeline evaluation results to a .csv file.
+
+    Inputs:
+        - file_name (str): name of the .csv file to write to
+        - header ([str]): headers of the table
+        - preprocess_name (str): preprocessing step name
+        - train_cnt (int): number of training samples
+        - best_k (int): number of topics
+        - best_params (dict): dictionary of best hyper-parameters
+        - train_time (int): number of seconds took for training
+        - train_metrics ([float]): evaluations on the training set
+        - test_time (int): number of seconds took for testing
+        - test_metrics ([float]): evaluations on the test set
+
+    Output:
+        (None)
+    """
     createDirs(PERFORMANCE_DIR)
     file_path = PERFORMANCE_DIR / file_name
 
@@ -73,6 +114,15 @@ def writeResults(file_name,
 
 
 def preprocessClfParser(desc):
+    """
+    Create an argument parser for classification pipeline.
+
+    Inputs:
+        - desc (str): descriptions about the parser
+
+    Output:
+        (argparse.ArgumentParser)
+    """
     parser = argparse.ArgumentParser(description=desc)
 
     parser.add_argument('--clf', dest='clf', type=str, default="logistic",
@@ -85,3 +135,7 @@ def preprocessClfParser(desc):
                         help="Whether to run for all train sizes.")
 
     return parser
+
+
+if __name__ == '__main__':
+    pass
