@@ -53,13 +53,7 @@
   Harris School of Public Policy\\
   The University of Chicago\\
   Chicago, IL 60637 \\
-  \texttt{kunyuhe@uchicago.edu} \\
-   \AND
-   Parth Khare\\
-   Harris School of Public Policy\\
-   The University of Chicago\\
-   Chicago, IL 60637 \\
-   \texttt{pkhare@uchicago.edu} \\
+  \texttt{kunyuhe@uchicago.edu}
 }
 
 \begin{document}
@@ -130,12 +124,12 @@ We use \emph{Logistic Regression} as our classifier. It is easy to interpret, fa
   \label{fig:topic_word}
 \end{figure}
 
-Figure \ref{fig:topic_word} illustrates the output of a LDA model. It shows the top 5 words (sorted by conditional probability on the corresponding topic) in each of the 13 casually chosen topics, out of the 130 topics extracted through the LDA step of the "best" classification pipeline. From these words, we imply that the latent topics are extracted based mostly on movie genres. LDA takes an unsupervised approach, and the latent semantic structure that DtM represents would not necessarily lead us to better classification results. Figure \ref{fig:pr_roc} shows the \emph{precision-recall trade-off} and the \emph{Receiver Operating Characteristic curve} of the best pipeline trained with the whole training corpus.
+Figure \ref{fig:topic_word} illustrates the output of a LDA model. It shows the top 5 words (sorted by conditional probability on the corresponding topic) in each of the 13 casually chosen topics, out of the 130 topics extracted through the LDA step of the "best" classification pipeline. From these words, we imply that the latent topics are extracted based mostly on movie genres. LDA takes an unsupervised approach, and the latent semantic structure that DtM represents would not necessarily lead us to better classification results. Figure \ref{fig:pr_roc} shows the \emph{precision-recall trade-off} and the \emph{Receiver Operating Characteristic (ROC)} curve of the best pipeline trained with the whole training corpus.
 
 \begin{figure}[h!]
   \centering
   \fbox{\includegraphics[width=\linewidth]{pr_roc.png}}
-  \caption{Precision-recall and ROC curve for the "Best" Classifier on the whole Training Set}
+  \caption{Precision-recall Trade-off and ROC curve for the "Best" Classification Pipeline}
   \label{fig:pr_roc}
 \end{figure}
 
@@ -150,6 +144,14 @@ As an experiment, we also use different proportions of the original training cor
 
 Apparently, test AUC for the classification pipeline with LDA preprocessing is lower by approximately 0.07. Besides, its training time is linear to the training set size, while that of the \emph{tf-idf} remains nearly constant. On the bright side, difference in test and training AUC is smaller for the LDA classification pipeline by 0.06 and is robustly decreasing with sample size. In addition, the reduction in dimensionality is very significant.
 
+\section{Discussion}
+\label{discussion}
+
+In this project we incorporate LDA as a dimensionality reduction tool in the text classification pipeline. We introduce the LDA model, describe the workflow of the classification pipeline with LDA/LSI preprocessing, and evaluate the pipeline through a sentiment classification task on the IMDb movie review data. From empirical results, incorporating LDA can harm model performance and lead to longer training time. However, it reduces the dimensionality of training data significantly and can help reduce overfitting.   
+
+The project has several caveats. Due to the long training time, we did not use grid search to find the best decision threshold for the classifier and might failed to get the optimal AUC. Since grid search for LSI takes really long, we did not include LSI into the classification pipeline performance comparison.
+
+\clearpage
 
 \section*{References}
 \medskip
