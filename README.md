@@ -1,6 +1,8 @@
 # LDA-Encoder-for-Text-Classification
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a2d2212571734d388841588f491e0c12)](https://www.codacy.com/manual/kunyuhe/Dimensionality-Reduction-for-Text-Classification-with-LDA?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=KunyuHe/Dimensionality-Reduction-for-Text-Classification-with-LDA&amp;utm_campaign=Badge_Grade)[![Maintainability](https://api.codeclimate.com/v1/badges/18fd35444b737d717434/maintainability)](https://codeclimate.com/github/KunyuHe/Dimensionality-Reduction-for-Text-Classification-with-LDA/maintainability)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a2d2212571734d388841588f491e0c12)](https://www.codacy.com/manual/kunyuhe/Dimensionality-Reduction-for-Text-Classification-with-LDA?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=KunyuHe/Dimensionality-Reduction-for-Text-Classification-with-LDA&amp;utm_campaign=Badge_Grade)
+[![Maintainability](https://api.codeclimate.com/v1/badges/18fd35444b737d717434/maintainability)](https://codeclimate.com/github/KunyuHe/Dimensionality-Reduction-for-Text-Classification-with-LDA/maintainability)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The curse of dimensionality is not rare for text classification tasks, and overfitting can be a direct result. This project attempts to incorporate a topic modeling technique, Latent Dirichlet Allocation (LDA), as a preprocessing step in the classification pipeline to address the issue. Using extracted topic distributions as encoding vectors, each document is represented as a linear combination of the latent topics. Empirical results show that although incorporating LDA might harms model performance, it can help reduce training time and address overfitting significantly.
 
@@ -14,13 +16,30 @@ A comprehensive introduction to this project can be found at [`./report.pdf`](ht
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
+Follow the instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
-### Prerequisites
+### Dependencies
 
-Please see a full list of dependencies at [`./requirements.txt`](https://github.com/KunyuHe/Dimensionality-Reduction-for-Text-Classification-with-LDA/blob/master/requirements.txt). Please follow the instructions to install them:
+First, navigate to a location on your machine to put this project, and run:
 
-First, navigate to the root directory of this project and run the following in console to create a virtual environment, and activate it:
+```
+git clone https://github.com/KunyuHe/Latent-Dirichlet-Allocation-Dimensionality-Reduction.git
+cd Latent-Dirichlet-Allocation-Dimensionality-Reduction
+```
+
+Follow the instructions below to install the dependencies.
+
+#### Conda
+
+Personally I prefer `conda` over `pip`, so I would suggest creating a `conda` virtual environment to host the dependencies with the following command (make sure you have installed `conda` and added it to the PATH beforehand):
+
+```console
+conda env create -f environment.yml
+```
+
+#### Pip
+
+You can also use `pip` (make sure you've installed `python` with `pip` beforehand). First, navigate to the root directory of this project and run the following in console to create a virtual environment, and activate it:
 
 ```
 python -m venv env
@@ -33,14 +52,6 @@ Then, run the following codes to install all the dependencies with `pip`.
 pip install --user -r requirements.txt
 ```
 
-Since this project use `spacy` for text preprocessing, lemmatization in specific, we need to download `en_core_web_sm`.
-
-```
-python -m spacy download en_core_web_sm
-```
-
-
-
 ### Data
 
 We use a dataset of 50,000 movie reviews from the IMDb (Internet Movie Datbase) website collected
@@ -51,17 +62,21 @@ balanced. Our goal is to build a text classification pipeline that distinguish p
 negative ones. The classifier should generalize well enough on unseen movie reviews and tag them
 with correct sentiment labels.
 
-To get the data, please navigate to `./data/`, and download the dataset into this folder at: https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz 
+To get the data, please navigate to `data/`, and download the dataset into this folder at: https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz 
 
 After downloading, please unzip the archive, and replace all the duplicate files.
 
- 
+Since this project use `spacy` for text preprocessing, lemmatization in specific, we need to download `en_core_web_sm`.
+
+```
+python -m spacy download en_core_web_sm
+```
 
 ## Run the Program
 
 Please follow the instructions below to run the program:
 
-1. Navigate to `./codes/` directory that holds all the scripts.
+1. Navigate to `codes/` directory that holds all the scripts.
 
    ```
    cd codes
@@ -109,7 +124,7 @@ See also the list of [contributors](https://github.com/KunyuHe/Dimensionality-Re
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/KunyuHe/Dimensionality-Reduction-for-Text-Classification-with-LDA/LICENSE.md) file for details
+The package is released under the [MIT License](LICENSE).
 
 
 
