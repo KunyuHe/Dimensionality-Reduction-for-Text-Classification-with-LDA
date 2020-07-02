@@ -113,8 +113,7 @@ venv.bak/
 **/*.npy
 
 # logs
-**/*.log
-**/*.joblib
+models
 
 # notebooks
 **/*.ipynb

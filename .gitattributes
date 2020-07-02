@@ -1,3 +1,0 @@
-report/*.* linguist-vendored
-notebook/*.* linguist-vendored
-**/*.ipynb linguist-vendored
